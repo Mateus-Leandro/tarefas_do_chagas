@@ -45,7 +45,15 @@ class _TodoListPageState extends State<TodoListPage> {
           ),
           body: ListView(
             children: [
-              const NewTodoWidget(),
+              ValueListenableBuilder(
+                valueListenable: controller.filterNotifier,
+                builder: (context, filter, child) {
+                  if (filter == TodoFilter.completed) {
+                    return const SizedBox.shrink();
+                  }
+                  return const NewTodoWidget();
+                },
+              ),
               TodoListWidget(),
             ],
           )),
