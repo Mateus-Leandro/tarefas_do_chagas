@@ -32,4 +32,15 @@ class TodoListController {
   void changeFilter(TodoFilter filter) {
     filterNotifier.value = filter;
   }
+
+  void reorder(oldIndex, newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex--;
+    }
+    final todos = todoListNotifier.value;
+    final todo = todos.removeAt(oldIndex);
+    todos.insert(newIndex, todo);
+
+    todoListNotifier.reorder(todos);
+  }
 }

@@ -23,25 +23,29 @@ class TodoListNotifier extends ValueNotifier<List<Todo>> {
   }
 
   void add(Todo todo) {
-    _allTodosNotifier.value = [...value, todo];
+    _allTodosNotifier.value = [..._todos, todo];
   }
 
   void update(String id, String task) {
     _allTodosNotifier.value = [
-      for (final todo in value)
+      for (final todo in _todos)
         if (todo.id != id) todo else todo.copyWith(task: task)
     ];
   }
 
   void toogle(String id) {
     _allTodosNotifier.value = [
-      for (final todo in value)
+      for (final todo in _todos)
         if (todo.id != id) todo else todo.copyWith(completed: !todo.completed)
     ];
   }
 
   void remove(String id) {
-    _allTodosNotifier.value = value.where((todo) => todo.id != id).toList();
+    _allTodosNotifier.value = _todos.where((todo) => todo.id != id).toList();
+  }
+
+  void reorder(List<Todo> todos) {
+    _allTodosNotifier.value = todos;
   }
 
   void changeFilter(TodoFilter filter) {
