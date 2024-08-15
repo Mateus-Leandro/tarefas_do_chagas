@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tarefas_do_chagas/service_locator.dart';
 import 'package:tarefas_do_chagas/todo_list_page.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
+  await Hive.initFlutter();
   setupGetIt();
   runApp(const MyApp());
 }
