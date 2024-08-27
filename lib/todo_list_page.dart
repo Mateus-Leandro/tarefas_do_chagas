@@ -16,11 +16,14 @@ class TodoListPage extends StatefulWidget {
 
 class _TodoListPageState extends State<TodoListPage> {
   final controller = getIt<TodoListController>();
+
   static const List<Tab> tabs = [
-    Tab(text: 'Todas'),
-    Tab(text: 'a fazer'),
-    Tab(text: 'Concluídas')
+    Tab(text: 'all'),
+    Tab(text: 'incomplete'),
+    Tab(text: 'completed')
   ];
+
+  String selectedSegment = tabs[0].text!;
 
   @override
   void initState() {
@@ -36,11 +39,35 @@ class _TodoListPageState extends State<TodoListPage> {
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             title: const Text('To Do App'),
-            bottom: TabBar(
-              tabs: tabs,
-              onTap: (index) {
-                controller.changeFilter(TodoFilter.values[index]);
-              },
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(50),
+              child: SegmentedButton(
+                // showSelectedIcon: true,
+                segments: <ButtonSegment<String>>[
+                  ButtonSegment<String>(
+                    value: tabs[0].text!,
+                    label: Text('Todas'),
+                  ),
+                  ButtonSegment<String>(
+                    value: tabs[1].text!,
+                    label: Text('A fazer'),
+                  ),
+                  ButtonSegment<String>(
+                    value: tabs[2].text!,
+                    label: Text('Concluidas'),
+                  )
+                ],
+                selected: {selectedSegment},
+                onSelectionChanged: (newSelection) {
+                  setState(() {
+                    selectedSegment = newSelection.first;
+                    controller.changeFilter(
+                      TodoFilter.values[tabs
+                          .indexWhere((tab) => tab.text == selectedSegment)],
+                    );
+                  });
+                },
+              ),
             ),
           ),
           body: ListView(
