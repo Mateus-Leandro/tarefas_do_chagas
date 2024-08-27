@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:tarefas_do_chagas/service_locator.dart';
 import 'package:tarefas_do_chagas/todo.dart';
@@ -15,6 +16,7 @@ class TodoItemWidget extends StatefulWidget {
 class _TodoItemWidgetState extends State<TodoItemWidget> {
   late TextEditingController todoController;
   final controller = getIt<TodoListController>();
+  Timer? debouncer;
 
   @override
   void initState() {
@@ -39,13 +41,16 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
       trailing: IconButton(
         onPressed: onDeleted,
         visualDensity: VisualDensity.compact,
-        icon: Icon(Icons.close_rounded),
+        icon: const Icon(Icons.close_rounded),
       ),
     );
   }
 
   void onChanged(String task) {
-    controller.update(widget.todo.id, task);
+    debouncer?.cancel();
+    debouncer = Timer(const Duration(milliseconds: 500), () {
+      controller.update(widget.todo.id, task);
+    });
   }
 
   void onToggled(_) {

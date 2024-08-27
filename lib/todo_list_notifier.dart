@@ -1,25 +1,26 @@
 import 'package:flutter/cupertino.dart';
+import 'package:tarefas_do_chagas/service_locator.dart';
+import 'package:tarefas_do_chagas/storage_service.dart';
 import 'package:tarefas_do_chagas/todo.dart';
 import 'package:tarefas_do_chagas/todo_filter.dart';
 
 class TodoListNotifier extends ValueNotifier<List<Todo>> {
-  TodoListNotifier() : super(_initialValue);
+  TodoListNotifier() : super([]);
 
-  static final List<Todo> _initialValue = [
-    Todo.create('Task 1'),
-    Todo.create('Task 2'),
-    Todo.create('Task 3'),
-    Todo.create('Task 4'),
-    Todo.create('Task 5'),
-  ];
-
-  final _allTodosNotifier = ValueNotifier<List<Todo>>(_initialValue);
+  final _allTodosNotifier = ValueNotifier<List<Todo>>([]);
   TodoFilter _currentFilter = TodoFilter.all;
+  final _storageService = getIt<StorageService>();
 
   List<Todo> get _todos => _allTodosNotifier.value;
 
-  void init() {
-    _allTodosNotifier.addListener(() => _updateTodoList());
+  void init() async {
+    _allTodosNotifier.value = await _storageService.getTodos();
+    _updateTodoList();
+
+    _allTodosNotifier.addListener(() {
+      _updateTodoList();
+      _saveTodoListToDB();
+    });
   }
 
   void add(Todo todo) {
@@ -55,6 +56,12 @@ class TodoListNotifier extends ValueNotifier<List<Todo>> {
 
   void _updateTodoList() {
     value = _mapFilterToTodoList();
+  }
+
+  void _saveTodoListToDB() {
+    _storageService.saveTodos(
+      _todos.where((todo) => todo.task.isNotEmpty).toList(),
+    );
   }
 
   List<Todo> _mapFilterToTodoList() => switch (_currentFilter) {
